@@ -76,6 +76,14 @@ void delay(uint16_t time){
 	while(__HAL_TIM_GET_COUNTER(&htim1) < time);
 }
 
+char str[10] = {0};
+
+/*void Display_Rh (int Rh) {
+	sprintf (str, "A%d\r\n", Rh);
+	HAL_UART_Transmit(&huart2, str, strlen(str), 1000);
+	HAL_UART_Transmit(&huart1, str, strlen(str), 1000);
+}*/
+
 void Set_Pin_Output(GPIO_TypeDef *GPIOx, uint16_t GPIO_Pin){
 	GPIO_InitTypeDef GPIO_InitStruct = {0};
 	GPIO_InitStruct.Pin = GPIO_Pin;
@@ -134,30 +142,14 @@ uint8_t DHT11_Read (void)
 	return i;
 }
 
-bool isGoingToRain(int temperature, int humidity) {
+/*int isGoingToRain(int temperature, int humidity) {
     // Check the temperature and humidity thresholds for rain
     if (temperature > 25 && humidity > 70) {
-        return TRUE;  // High possibility of rain
+        return 1;  // High possibility of rain
     } else {
-        return FALSE;  // Low possibility of rain
+        return 0;  // Low possibility of rain
     }
-}
-
-/*
- *
- *
- *
- *
- *
- *
- *
- *
- *
- *
- *
- *
- *
- */
+}*/
 
 /* USER CODE END 0 */
 
@@ -194,8 +186,6 @@ int main(void)
   MX_ADC1_Init();
   MX_USART1_UART_Init();
   /* USER CODE BEGIN 2 */
-  int percentage2 = 0;
-  int percentage = 50;
 
   HAL_TIM_Base_Start_IT(&htim1);
   /* USER CODE END 2 */
@@ -213,9 +203,9 @@ int main(void)
 	  HAL_ADC_Start(&hadc1);
 	  if(HAL_ADC_PollForConversion(&hadc1,1000000)==HAL_OK){
 		  adcval = HAL_ADC_GetValue(&hadc1);
-	   	  char buffer1[20];
-	  	  sprintf(buffer1, "%d\r\n", adcval);
-	  	  HAL_UART_Transmit(&huart2, &buffer1, strlen(buffer1), HAL_MAX_DELAY);
+	   	  //char buffer1[20];
+	  	  //sprintf(buffer1, "L%d\r\n", adcval);
+	  	  //HAL_UART_Transmit(&huart2, &buffer1, strlen(buffer1), HAL_MAX_DELAY);
 	  }
 
 	  	DHT11_Start(); // ok
@@ -228,18 +218,22 @@ int main(void)
 
 	  	temp = t_byte1;
 	  	humid = h_byte1;
-	  	sprintf(buffer, "temp : %d humid : %d \r\n",temp,humid);
+	  	sprintf(buffer, "L%dT%dH%d \r\n",adcval,temp,humid);
 	  	HAL_UART_Transmit(&huart2, &buffer, strlen(buffer), HAL_MAX_DELAY);
 	  	HAL_Delay(1000);
-	  	percentage = (int) humid;
-	  	if (isGoingToRain()){
-	  		HAL_UART_Transmit(&huart1, 1, sizeof(int), 2000);
-	  		// HAL_UART_Transmit(&huart2, "y", 1, 2000);
+
+	  	/*int a = 1;
+	  	int b = 2;
+	  	int c = 0;
+	  	if (isGoingToRain(temp,humid) == 1){
+	  		HAL_UART_Transmit(&huart1, &a, sizeof(a), 2000);
+	  		HAL_UART_Transmit(&huart2, "y", 1, 2000);
 	  	}
-	  	else if (adcval < 400){
-	  		HAL_UART_Transmit(&huart1, 2, sizeof(int), 2000);
-	  	}
-	  //}
+	  	else if (adcval < 300){
+	  		HAL_UART_Transmit(&huart1, &b, sizeof(b), 2000);
+	  	}else{
+	  		HAL_UART_Transmit(&huart1, &c, sizeof(c), 2000);
+	  	}*/
 
   }
   /* USER CODE END 3 */
