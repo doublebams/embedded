@@ -232,14 +232,13 @@ int main(void)
 	  	HAL_UART_Transmit(&huart2, &buffer, strlen(buffer), HAL_MAX_DELAY);
 	  	HAL_Delay(1000);
 	  	percentage = (int) humid;
-	  	if (percentage > 60){
-	  		HAL_UART_Transmit(&huart1, &percentage, sizeof(percentage), 2000);
-	  		HAL_UART_Transmit(&huart2, "y", 1, 2000);
+	  	if (isGoingToRain()){
+	  		HAL_UART_Transmit(&huart1, 1, sizeof(int), 2000);
+	  		// HAL_UART_Transmit(&huart2, "y", 1, 2000);
 	  	}
-	  	//else{
-	  		//HAL_UART_Transmit(&huart1, &percentage, sizeof(percentage), 2000);
-	  		//HAL_UART_Transmit(&huart2, "n", 1, 2000);
-	  	//}
+	  	else if (adcval < 400){
+	  		HAL_UART_Transmit(&huart1, 2, sizeof(int), 2000);
+	  	}
 	  //}
 
   }
