@@ -220,6 +220,7 @@ int main(void)
 	  	humid = h_byte1;
 	  	sprintf(buffer, "L%dT%dH%d \r\n",adcval,temp,humid);
 	  	HAL_UART_Transmit(&huart2, &buffer, strlen(buffer), HAL_MAX_DELAY);
+	  	HAL_UART_Transmit(&huart1, &buffer, strlen(buffer), HAL_MAX_DELAY);
 	  	HAL_Delay(1000);
 
 	  	/*int a = 1;
