@@ -134,6 +134,15 @@ uint8_t DHT11_Read (void)
 	return i;
 }
 
+bool isGoingToRain(int temperature, int humidity) {
+    // Check the temperature and humidity thresholds for rain
+    if (temperature > 25 && humidity > 70) {
+        return TRUE;  // High possibility of rain
+    } else {
+        return FALSE;  // Low possibility of rain
+    }
+}
+
 /*
  *
  *
