@@ -10,7 +10,7 @@ function updateValue(data1,data2,data3) {
 
   if (light.innerHTML < 300) {
     weatherImage.innerHTML = `<img class="weatherImage" src="./images/moon.png" alt="moon"></img>`;
-  } else if (humidity.innerHTML > 70 && temperature.innerHTML > 25) {
+  } else if (humidity.innerHTML > 70 && temperature.innerHTML > 34) {
     weatherImage.innerHTML = `<img class="weatherImage" src="./images/storm.png" alt="storm"></img>`;
   } else {
     weatherImage.innerHTML = `<img class="weatherImage" src="./images/sunny.png" alt="sunny">`;
