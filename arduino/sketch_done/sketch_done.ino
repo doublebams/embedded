@@ -2,6 +2,7 @@
 
 #include <SoftwareSerial.h>
 #include <ESP8266WiFi.h>
+#include <TridentTD_LineNotify.h>
 #include <FirebaseArduino.h>
  
 // Config Firebase
@@ -11,17 +12,19 @@
 // Config connect WiFi
 #define WIFI_SSID "Fah"
 #define WIFI_PASSWORD "password"
+#define LINE_TOKEN  "OxNx3SZjYfHNKG9QpGZXJYgWUJJY8dXfbdeyDDICeje"  
  
 
  
-
+bool isSent = false;
 
 const byte RX = D7;
 const byte TX = D8;
 SoftwareSerial mySerial(RX,TX);
-bool isOn = false;
+
 String btn_state, fireHumid, fireLight, append_text, hh,ll,tt,light,temp, humid;
 int i = 0;
+
 
 String st = "";
 char inChar = ' ';
@@ -33,6 +36,7 @@ void setup() {
   mySerial.begin(9600);
   //testSerial.begin(115200);
  
+ isSent = false;
   WiFi.mode(WIFI_STA);
 // connect to wifi.
   WiFi.begin(WIFI_SSID, WIFI_PASSWORD);
@@ -55,6 +59,10 @@ Firebase.begin(FIREBASE_HOST, FIREBASE_AUTH);
     //break
     //return ;
   }
+  LINE.setToken(LINE_TOKEN);
+
+  // ตัวอย่างส่งข้อความ
+  LINE.notify("ready");
 }
  
 void loop() {
@@ -81,6 +89,13 @@ if(Firebase.failed()){
     Firebase.setInt("light", light.toInt());
     Firebase.setInt("humidity", humid.toInt());
     Firebase.setInt("temp", temp.toInt());
+
+    if(light.toInt() < 300 || (temp.toInt() >34 && humid.toInt() > 70)){
+      if(isSent == false){
+        isSent = true;
+        sendM();
+      }
+    }
     if (Firebase.failed()) {
         Serial.print("set /number failed:");
         Serial.println(Firebase.error());
@@ -94,14 +109,22 @@ if(Firebase.failed()){
   //delay(1000);
 }
 
+void sendM(){
 
+  LINE.notify("เก็บผ้าได้แล้วจ้าา");
+
+  LINE.notifySticker(3, 185);
+
+  //INE.notify(val);
+
+}
 
 void Read_Uart() {
 
   st = "";
   while (mySerial.available()) {
     inChar = (char)mySerial.read();
-    if (inChar == '\n') {
+    if (inChar == '\n' && append_text.length() <= 14 && append_text.length() > 9) {
       Serial.println(append_text);
       A = append_text.indexOf("L");
       B = append_text.indexOf("T");
@@ -118,6 +141,7 @@ void Read_Uart() {
       if (ll != "") {
         light = ll;
 
+
       }
       if (hh != "") {
         humid = hh;
@@ -128,6 +152,7 @@ void Read_Uart() {
 
       }
 
+      delay(3000);
       return;
     }
     
@@ -137,5 +162,5 @@ void Read_Uart() {
       append_text += inChar;
     }  
   }
-  delay(3000);
+  
 }
